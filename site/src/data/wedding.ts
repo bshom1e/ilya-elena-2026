@@ -50,6 +50,8 @@ export interface Wedding {
 		telegram: string;
 		telegramUrl: string;
 	};
+	/** Базовый URL воркера RSVP (без `/rsvp`); контракт запроса — в CLAUDE.md */
+	rsvpEndpoint: string;
 }
 
 /** Именной гость для персональной ссылки …/g/<slug>. Список — в guests.json. */
@@ -146,4 +148,6 @@ export const wedding: Wedding = {
 		telegram: '@hom1ee',
 		telegramUrl: 'https://t.me/hom1ee',
 	},
+	// TODO: заменить на реальный URL после `wrangler deploy` (см. rsvp-worker/)
+	rsvpEndpoint: 'https://rsvp-worker.hom1ee.workers.dev',
 };

@@ -1,6 +1,6 @@
 ---
 import Section from './Section.astro';
-// Разметка полей по контракту RSVP. Отправка подключается позже.
+import { wedding } from '../data/wedding';
 
 interface Props {
 	/** slug именного гостя — уходит в скрытое поле контракта RSVP */
@@ -13,11 +13,11 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 ---
 
 <Section id="rsvp" eyebrow="Будете с нами?" title="Подтвердите присутствие">
-	<form class="rsvp" novalidate>
+	<form class="rsvp" novalidate data-endpoint={wedding.rsvpEndpoint}>
 		{guest && <input type="hidden" name="guest" value={guest} />}
 		<div class="field">
 			<label for="rsvp-name">Ваше имя</label>
-			<input class="input" id="rsvp-name" name="name" type="text" placeholder="Имя и фамилия" autocomplete="name" />
+			<input class="input" id="rsvp-name" name="name" type="text" placeholder="Имя и фамилия" autocomplete="name" required />
 		</div>
 
 		<div class="field">
@@ -28,14 +28,14 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 			</div>
 		</div>
 
-		<div class="field">
+		<div class="field" data-if-attending>
 			<label for="rsvp-count">Сколько вас будет</label>
 			<select class="input" id="rsvp-count" name="guestsCount">
 				{counts.map((n) => <option value={n}>{n === 1 ? '1 — только я' : n}</option>)}
 			</select>
 		</div>
 
-		<div class="field">
+		<div class="field" data-if-attending>
 			<label>Предпочтения по напиткам</label>
 			<div class="choices">
 				<label class="choice"><input type="checkbox" name="alcohol" value="red" /> Красное вино</label>
@@ -46,7 +46,7 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 			</div>
 		</div>
 
-		<div class="field">
+		<div class="field" data-if-attending>
 			<label for="rsvp-diet">Аллергии или особенности питания</label>
 			<input class="input" id="rsvp-diet" name="dietary" type="text" placeholder="Например: вегетарианство, аллергия на орехи" />
 		</div>
@@ -56,12 +56,96 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 			<textarea class="textarea" id="rsvp-msg" name="message" placeholder="Пара тёплых слов…"></textarea>
 		</div>
 
-		{/* honeypot: скрытое поле для отсева ботов, задача 05 */}
+		{/* honeypot: скрытое поле для отсева ботов */}
 		<input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-		<button class="btn btn-primary" type="button" disabled>Форма заработает скоро</button>
+		<button class="btn btn-primary" type="submit">Отправить</button>
+		<p class="status" role="status" aria-live="polite" hidden></p>
 	</form>
 </Section>
+
+<script>
+	function initRsvp(form: HTMLFormElement): void {
+		const endpoint = form.dataset.endpoint;
+		const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+		const status = form.querySelector<HTMLParagraphElement>('.status');
+		const attendingInputs = form.querySelectorAll<HTMLInputElement>('input[name="attending"]');
+		const conditionalFields = form.querySelectorAll<HTMLElement>('[data-if-attending]');
+		const alcoholInputs = form.querySelectorAll<HTMLInputElement>('input[name="alcohol"]');
+		const noneAlcohol = form.querySelector<HTMLInputElement>('input[name="alcohol"][value="none"]');
+
+		function syncAttendance(): void {
+			const attending = form.querySelector<HTMLInputElement>('input[name="attending"]:checked')?.value === 'yes';
+			conditionalFields.forEach((field) => {
+				field.hidden = !attending;
+			});
+		}
+		attendingInputs.forEach((input) => input.addEventListener('change', syncAttendance));
+		syncAttendance();
+
+		alcoholInputs.forEach((input) => {
+			input.addEventListener('change', () => {
+				if (input === noneAlcohol && input.checked) {
+					alcoholInputs.forEach((other) => {
+						if (other !== noneAlcohol) other.checked = false;
+					});
+				} else if (input !== noneAlcohol && input.checked && noneAlcohol) {
+					noneAlcohol.checked = false;
+				}
+			});
+		});
+
+		function showStatus(text: string, tone: 'success' | 'error'): void {
+			if (!status) return;
+			status.textContent = text;
+			status.className = `status status-${tone}`;
+			status.hidden = false;
+		}
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			if (!endpoint || !submitBtn) return;
+
+			const data = new FormData(form);
+			const attending = data.get('attending') === 'yes';
+			const payload = {
+				guest: (data.get('guest') as string | null) ?? null,
+				name: String(data.get('name') ?? '').trim(),
+				attending,
+				guestsCount: attending ? Number(data.get('guestsCount') ?? 1) : 1,
+				alcohol: attending ? (data.getAll('alcohol') as string[]) : [],
+				dietary: attending ? String(data.get('dietary') ?? '').trim() : '',
+				message: String(data.get('message') ?? '').trim(),
+				website: String(data.get('website') ?? ''),
+			};
+
+			submitBtn.disabled = true;
+			submitBtn.textContent = 'Отправляем…';
+			if (status) status.hidden = true;
+
+			try {
+				const res = await fetch(`${endpoint}/rsvp`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+				if (!res.ok) throw new Error('request_failed');
+
+				form.querySelectorAll('input, select, textarea, button').forEach((el) => {
+					(el as HTMLInputElement | HTMLButtonElement).disabled = true;
+				});
+				submitBtn.textContent = 'Ответ отправлен';
+				showStatus(attending ? 'Спасибо, ждём вас!' : 'Спасибо, что предупредили — будем скучать!', 'success');
+			} catch {
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Отправить';
+				showStatus('Не получилось отправить ответ. Напишите нам в Telegram @hom1ee — передадим лично.', 'error');
+			}
+		});
+	}
+
+	document.querySelectorAll<HTMLFormElement>('form.rsvp').forEach(initRsvp);
+</script>
 
 <style>
 	.rsvp {
@@ -161,6 +245,17 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 	}
 	.btn-primary {
 		margin-top: var(--space-2);
+	}
+	.status {
+		margin: 0;
+		font-size: var(--text-base);
+		text-align: center;
+	}
+	.status-success {
+		color: var(--color-accent-ink);
+	}
+	.status-error {
+		color: #a3453a;
 	}
 	/* honeypot прячем и от глаз, и от скринридеров */
 	.honeypot {
