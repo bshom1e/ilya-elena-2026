@@ -1,0 +1,78 @@
+<!-- @dsCard group="Colors" title="Палитра" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Палитра</title>
+<!-- @shared -->
+<style>
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: var(--space-3);
+		max-width: 40rem;
+		margin: 0 auto;
+	}
+	.swatch {
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius);
+		overflow: hidden;
+		background: var(--color-surface);
+	}
+	.swatch .chip { height: 5.5rem; }
+	.swatch .meta {
+		padding: var(--space-2) var(--space-3);
+		font-size: var(--text-caption);
+		line-height: 1.5;
+	}
+	.swatch .name { font-weight: 600; }
+	.swatch .hex, .swatch .note { color: var(--color-text-muted); }
+	.contrast {
+		max-width: 40rem;
+		margin: var(--space-4) auto 0;
+		padding-top: var(--space-3);
+		border-top: 1px solid var(--color-line);
+		color: var(--color-text-muted);
+		font-size: var(--text-caption);
+	}
+</style>
+</head>
+<body>
+	<div class="grid">
+		<div class="swatch">
+			<div class="chip" style="background:#faf7f2"></div>
+			<div class="meta"><div class="name">bg · айвори</div><div class="hex">#FAF7F2</div><div class="note">основной фон</div></div>
+		</div>
+		<div class="swatch">
+			<div class="chip" style="background:#ffffff"></div>
+			<div class="meta"><div class="name">surface</div><div class="hex">#FFFFFF</div><div class="note">карточки, поля</div></div>
+		</div>
+		<div class="swatch">
+			<div class="chip" style="background:#f1e9de"></div>
+			<div class="meta"><div class="name">bg-alt · беж</div><div class="hex">#F1E9DE</div><div class="note">чередование секций</div></div>
+		</div>
+		<div class="swatch">
+			<div class="chip" style="background:#3d3833"></div>
+			<div class="meta"><div class="name">text</div><div class="hex">#3D3833</div><div class="note">10.9:1 на айвори</div></div>
+		</div>
+		<div class="swatch">
+			<div class="chip" style="background:#6f665c"></div>
+			<div class="meta"><div class="name">text-muted</div><div class="hex">#6F665C</div><div class="note">5.3:1 на айвори</div></div>
+		</div>
+		<div class="swatch">
+			<div class="chip" style="background:#b08d7a"></div>
+			<div class="meta"><div class="name">accent</div><div class="hex">#B08D7A</div><div class="note">только декор</div></div>
+		</div>
+		<div class="swatch">
+			<div class="chip" style="background:#8c6753"></div>
+			<div class="meta"><div class="name">accent-ink</div><div class="hex">#8C6753</div><div class="note">ссылки, кнопки · 4.7:1</div></div>
+		</div>
+		<div class="swatch">
+			<div class="chip" style="background:#e5ddd3"></div>
+			<div class="meta"><div class="name">line</div><div class="hex">#E5DDD3</div><div class="note">разделители, рамки</div></div>
+		</div>
+	</div>
+	<p class="contrast">Все текстовые цвета проходят WCAG AA (≥ 4.5:1) на обоих фонах. Чистый акцент #B08D7A — только для линий и орнамента, текст им не набираем.</p>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!-- @dsCard group="Typography" title="Типографика" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Типографика</title>
+<!-- @shared -->
+<style>
+	.stack {
+		max-width: 42rem;
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+	}
+	.row { border-bottom: 1px solid var(--color-line); padding-bottom: var(--space-3); }
+	.row:last-child { border-bottom: 0; }
+	.label {
+		margin: 0 0 var(--space-2);
+		color: var(--color-text-muted);
+		font-size: var(--text-caption);
+		letter-spacing: 0.08em;
+	}
+	.display { font-family: var(--font-display); font-size: var(--text-display); font-weight: 500; line-height: 1.05; }
+	.h1 { font-size: var(--text-h1); }
+	.h2 { font-size: var(--text-h2); }
+	.h3 { font-size: var(--text-h3); }
+	.accent-line {
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--text-h3);
+		color: var(--color-accent-ink);
+	}
+	.lead { font-size: var(--text-lg); }
+	.body-text { max-width: 34rem; }
+	.caption { color: var(--color-text-muted); font-size: var(--text-caption); }
+</style>
+</head>
+<body>
+	<div class="stack">
+		<div class="row">
+			<p class="label">display · Cormorant 500 · clamp(2.75rem — 6rem)</p>
+			<div class="display">Илья&nbsp;&amp;&nbsp;Елена</div>
+		</div>
+		<div class="row">
+			<p class="label">h1 · Cormorant 500</p>
+			<h1 class="h1">Приглашаем на свадьбу</h1>
+		</div>
+		<div class="row">
+			<p class="label">h2 · Cormorant 500 — заголовок секции</p>
+			<h2 class="h2">Программа дня</h2>
+		</div>
+		<div class="row">
+			<p class="label">h3 · Cormorant 500</p>
+			<h3 class="h3">Церемония бракосочетания</h3>
+		</div>
+		<div class="row">
+			<p class="label">акцентная строка · Cormorant italic · accent-ink</p>
+			<p class="accent-line">шестое августа две тысячи двадцать шестого</p>
+		</div>
+		<div class="row">
+			<p class="label">eyebrow · Manrope 600 · 13px · разрядка</p>
+			<p class="eyebrow">Сбор гостей в 16:30</p>
+		</div>
+		<div class="row">
+			<p class="label">лид · Manrope · 19px</p>
+			<p class="lead body-text">Дорогие гости! Мы будем счастливы разделить с вами один из самых важных дней нашей жизни.</p>
+		</div>
+		<div class="row">
+			<p class="label">body · Manrope · 16px / 1.65</p>
+			<p class="body-text">Торжество пройдёт на базе отдыха «Чистые пруды» — среди сосен и тишины, в получасе от города. Пожалуйста, подтвердите присутствие заранее: так мы сможем позаботиться о каждом.</p>
+		</div>
+		<div class="row">
+			<p class="label">caption · Manrope · 13px · text-muted</p>
+			<p class="caption">База отдыха «Чистые пруды», Архангельск · 6 августа 2026</p>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,4 +1,7 @@
 ---
+import '@fontsource-variable/cormorant';
+import '@fontsource-variable/cormorant/wght-italic.css';
+import '@fontsource-variable/manrope';
 import '../styles/tokens.css';
 
 interface Props {
@@ -37,7 +40,72 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		color: var(--color-text);
 		font-family: var(--font-body);
 		font-size: var(--text-base);
-		line-height: 1.6;
+		line-height: 1.65;
 		-webkit-font-smoothing: antialiased;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-display);
+		font-weight: 500;
+		line-height: 1.15;
+	}
+
+	a {
+		color: var(--color-accent-ink);
+	}
+
+	/* Надзаголовок секции — Manrope 600, разрядка, капс */
+	.eyebrow {
+		margin: 0;
+		color: var(--color-accent-ink);
+		font-size: var(--text-caption);
+		font-weight: 600;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+	}
+
+	/* Кнопки — единый стиль из дизайн-системы */
+	.btn {
+		display: inline-block;
+		padding: 0.8em 2.2em;
+		border-radius: var(--radius);
+		border: 1px solid transparent;
+		font-family: var(--font-body);
+		font-size: var(--text-base);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background var(--transition), border-color var(--transition),
+			color var(--transition), transform var(--transition);
+	}
+	.btn-primary {
+		background: var(--color-accent-ink);
+		color: var(--color-bg);
+	}
+	.btn-primary:hover {
+		background: #7a5744;
+	}
+	.btn-primary:active {
+		transform: translateY(1px);
+	}
+	.btn-primary[disabled] {
+		background: var(--color-line);
+		color: var(--color-text-muted);
+		cursor: not-allowed;
+	}
+	.btn-ghost {
+		background: transparent;
+		border-color: var(--color-accent-ink);
+		color: var(--color-accent-ink);
+	}
+	.btn-ghost:hover {
+		background: rgba(140, 103, 83, 0.08);
+	}
+	.btn:focus-visible {
+		outline: 2px solid var(--color-accent-ink);
+		outline-offset: 2px;
 	}
 </style>

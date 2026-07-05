@@ -1,20 +1,25 @@
-/* Дизайн-токены. Пока плейсхолдеры — финальные значения появятся вместе с дизайн-системой. */
+/* Дизайн-токены — единственный источник цветов и размеров для компонентов. */
 :root {
 	/* Палитра */
-	--color-bg: #faf7f2;
-	--color-surface: #ffffff;
-	--color-text: #3d3833;
-	--color-text-muted: #8a8178;
-	--color-accent: #b08d7a;
+	--color-bg: #faf7f2;         /* айвори, основной фон */
+	--color-surface: #ffffff;    /* карточки, поля формы */
+	--color-bg-alt: #f1e9de;     /* тёплый беж, чередование секций */
+	--color-text: #3d3833;       /* 10.9:1 на айвори */
+	--color-text-muted: #6f665c; /* 5.3:1 на айвори, 4.7:1 на беже */
+	--color-accent: #b08d7a;     /* терракот-беж: только декор (линии, орнамент) */
+	--color-accent-ink: #8c6753; /* акцентный текст, ссылки, кнопки (4.7:1) */
 	--color-line: #e5ddd3;
 
 	/* Типографика */
-	--font-display: georgia, 'Times New Roman', serif;
-	--font-body: system-ui, -apple-system, sans-serif;
+	--font-display: 'Cormorant Variable', georgia, 'Times New Roman', serif;
+	--font-body: 'Manrope Variable', system-ui, -apple-system, sans-serif;
+	--text-caption: 0.8125rem;   /* подписи, eyebrow */
 	--text-base: 1rem;
-	--text-lg: 1.25rem;
-	--text-xl: 2rem;
-	--text-display: clamp(2.5rem, 10vw, 5rem);
+	--text-lg: 1.1875rem;        /* лид */
+	--text-h3: clamp(1.375rem, 3vw, 1.625rem);
+	--text-h2: clamp(1.75rem, 5vw, 2.5rem);
+	--text-h1: clamp(2.25rem, 7vw, 3.5rem);
+	--text-display: clamp(2.75rem, 11vw, 6rem);
 
 	/* Отступы */
 	--space-1: 0.25rem;
@@ -22,9 +27,14 @@
 	--space-3: 1rem;
 	--space-4: 2rem;
 	--space-5: 4rem;
-	--space-6: 8rem;
+	--space-6: 7rem;
+
+	/* Секции */
+	--section-pad-y: clamp(3.5rem, 10vw, 7rem);
+	--section-pad-x: var(--space-4);
+	--content-width: 40rem;
 
 	/* Прочее */
-	--radius: 0.5rem;
+	--radius: 0.25rem;
 	--transition: 200ms ease;
 }

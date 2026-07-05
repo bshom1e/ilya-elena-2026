@@ -4,6 +4,7 @@ node_modules/
 # build
 dist/
 .astro/
+design-system/*.html
 
 # cloudflare
 .wrangler/

@@ -1,0 +1,64 @@
+:root {
+	/* Палитра */
+	--color-bg: #faf7f2;        /* айвори, основной фон */
+	--color-surface: #ffffff;   /* карточки, поля формы */
+	--color-bg-alt: #f1e9de;    /* тёплый беж, чередование секций */
+	--color-text: #3d3833;      /* 10.9:1 на айвори */
+	--color-text-muted: #6f665c;/* 5.3:1 на айвори, 4.7:1 на беже */
+	--color-accent: #b08d7a;    /* терракот-беж, только декор: линии, орнамент */
+	--color-accent-ink: #8c6753;/* акцентный текст, ссылки, кнопки (4.7:1) */
+	--color-line: #e5ddd3;
+
+	/* Типографика */
+	--font-display: 'Cormorant Variable', georgia, 'Times New Roman', serif;
+	--font-body: 'Manrope Variable', system-ui, sans-serif;
+	--text-caption: 0.8125rem;  /* 13px — подписи, eyebrow */
+	--text-base: 1rem;          /* 16px */
+	--text-lg: 1.1875rem;       /* 19px — лид, крупный текст */
+	--text-h3: clamp(1.375rem, 3vw, 1.625rem);
+	--text-h2: clamp(1.75rem, 5vw, 2.5rem);
+	--text-h1: clamp(2.25rem, 7vw, 3.5rem);
+	--text-display: clamp(2.75rem, 11vw, 6rem);
+
+	/* Отступы */
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 1rem;
+	--space-4: 2rem;
+	--space-5: 4rem;
+	--space-6: 7rem;
+
+	/* Прочее */
+	--radius: 0.25rem;
+	--transition: 200ms ease;
+}
+
+* { box-sizing: border-box; }
+
+body {
+	margin: 0;
+	padding: var(--space-4);
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-body);
+	font-size: var(--text-base);
+	font-weight: 400;
+	line-height: 1.65;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 500;
+	line-height: 1.15;
+}
+
+.eyebrow {
+	margin: 0;
+	color: var(--color-accent-ink);
+	font-size: var(--text-caption);
+	font-weight: 600;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+}

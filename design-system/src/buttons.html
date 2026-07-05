@@ -1,0 +1,57 @@
+<!-- @dsCard group="Components" title="Кнопки" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Кнопки</title>
+<!-- @shared -->
+<style>
+	.stack { max-width: 34rem; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-4); }
+	.label { margin: 0 0 var(--space-2); color: var(--color-text-muted); font-size: var(--text-caption); letter-spacing: 0.08em; }
+	.rowset { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+
+	.btn {
+		display: inline-block;
+		padding: 0.8em 2.2em;
+		border-radius: var(--radius);
+		border: 1px solid transparent;
+		font-family: var(--font-body);
+		font-size: var(--text-base);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
+	}
+	.btn-primary { background: var(--color-accent-ink); color: var(--color-bg); }
+	.btn-primary:hover, .btn-primary.-hover { background: #7a5744; }
+	.btn-primary:active { transform: translateY(1px); }
+	.btn-primary[disabled], .btn-primary.-disabled { background: var(--color-line); color: var(--color-text-muted); cursor: not-allowed; }
+
+	.btn-ghost { background: transparent; border-color: var(--color-accent-ink); color: var(--color-accent-ink); }
+	.btn-ghost:hover, .btn-ghost.-hover { background: rgba(140, 103, 83, 0.08); }
+
+	.btn:focus-visible { outline: 2px solid var(--color-accent-ink); outline-offset: 2px; }
+</style>
+</head>
+<body>
+	<div class="stack">
+		<div>
+			<p class="label">primary · обычная / hover / disabled</p>
+			<div class="rowset">
+				<button class="btn btn-primary">Подтвердить присутствие</button>
+				<button class="btn btn-primary -hover">Hover</button>
+				<button class="btn btn-primary -disabled" disabled>Отправка…</button>
+			</div>
+		</div>
+		<div>
+			<p class="label">ghost · обычная / hover</p>
+			<div class="rowset">
+				<a class="btn btn-ghost" href="#">Открыть в Яндекс.Картах</a>
+				<a class="btn btn-ghost -hover" href="#">Hover</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

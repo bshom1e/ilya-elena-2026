@@ -1,0 +1,94 @@
+<!-- @dsCard group="Components" title="Карточки" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Карточки</title>
+<!-- @shared -->
+<style>
+	.stack { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-5); }
+	.label { margin: 0 0 var(--space-3); color: var(--color-text-muted); font-size: var(--text-caption); letter-spacing: 0.08em; }
+
+	/* Пункт программы дня: время + вертикальная линия + описание */
+	.schedule { display: flex; flex-direction: column; }
+	.slot { display: grid; grid-template-columns: 4.5rem 1px 1fr; gap: var(--space-3); }
+	.slot .time {
+		font-family: var(--font-display);
+		font-size: var(--text-h3);
+		font-weight: 500;
+		color: var(--color-accent-ink);
+		text-align: right;
+		line-height: 1.2;
+	}
+	.slot .rail { background: var(--color-line); position: relative; }
+	.slot .rail::before {
+		content: '';
+		position: absolute;
+		top: 0.45rem; left: 50%;
+		width: 9px; height: 9px;
+		transform: translateX(-50%);
+		border-radius: 50%;
+		background: var(--color-accent);
+	}
+	.slot .what { padding-bottom: var(--space-4); }
+	.slot:last-child .what { padding-bottom: 0; }
+	.slot .what h3 { font-size: var(--text-h3); margin-bottom: var(--space-1); }
+	.slot .what p { margin: 0; color: var(--color-text-muted); font-size: var(--text-caption); }
+
+	/* Палитра дресс-кода */
+	.dress { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+	.dot { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); font-size: var(--text-caption); color: var(--color-text-muted); }
+	.dot i {
+		width: 3rem; height: 3rem;
+		border-radius: 50%;
+		border: 1px solid var(--color-line);
+		box-shadow: inset 0 0 0 3px var(--color-bg);
+	}
+	.dot.-no { position: relative; }
+	.dot.-no i::after {
+		content: '';
+		position: absolute;
+		top: 1.4rem; left: 50%;
+		width: 3.4rem; height: 1.5px;
+		background: var(--color-text-muted);
+		transform: translateX(-50%) rotate(-45deg);
+	}
+</style>
+</head>
+<body>
+	<div class="stack">
+		<div>
+			<p class="label">программа дня · пункт таймлайна</p>
+			<div class="schedule">
+				<div class="slot">
+					<div class="time">16:30</div>
+					<div class="rail"></div>
+					<div class="what"><h3>Сбор гостей</h3><p>Фуршет и лёгкие закуски на свежем воздухе</p></div>
+				</div>
+				<div class="slot">
+					<div class="time">17:00</div>
+					<div class="rail"></div>
+					<div class="what"><h3>Церемония</h3><p>Самый трогательный момент дня</p></div>
+				</div>
+				<div class="slot">
+					<div class="time">22:00</div>
+					<div class="rail"></div>
+					<div class="what"><h3>Открытие танцпола</h3><p>Танцуем до самой ночи</p></div>
+				</div>
+			</div>
+		</div>
+		<div>
+			<p class="label">дресс-код · палитра гостей + чего избегаем</p>
+			<div class="dress">
+				<span class="dot"><i style="background:#c9b8a3"></i>беж</span>
+				<span class="dot"><i style="background:#b08d7a"></i>терракот</span>
+				<span class="dot"><i style="background:#a3a58f"></i>оливка</span>
+				<span class="dot"><i style="background:#8f9bab"></i>серо-голубой</span>
+				<span class="dot"><i style="background:#6b5d52"></i>какао</span>
+				<span class="dot -no"><i style="background:#fffdf8"></i>белый — нет</span>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

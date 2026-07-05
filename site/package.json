@@ -12,6 +12,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@fontsource-variable/cormorant": "^5.2.8",
+    "@fontsource-variable/manrope": "^5.2.8",
     "astro": "^7.0.6"
   }
 }
