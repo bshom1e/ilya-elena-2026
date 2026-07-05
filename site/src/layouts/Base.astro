@@ -1,0 +1,43 @@
+---
+import '../styles/tokens.css';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = 'Приглашение на свадьбу Ильи и Елены — 6 августа 2026' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<html lang="ru">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style is:global>
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		background: var(--color-bg);
+		color: var(--color-text);
+		font-family: var(--font-body);
+		font-size: var(--text-base);
+		line-height: 1.6;
+		-webkit-font-smoothing: antialiased;
+	}
+</style>
