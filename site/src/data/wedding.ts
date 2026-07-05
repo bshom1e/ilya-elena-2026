@@ -50,7 +50,7 @@ export interface Wedding {
 		telegram: string;
 		telegramUrl: string;
 	};
-	/** Базовый URL воркера RSVP (без `/rsvp`); контракт запроса — в CLAUDE.md */
+	/** Базовый URL воркера RSVP (без `/rsvp`) */
 	rsvpEndpoint: string;
 }
 
