@@ -1,0 +1,74 @@
+---
+import Section from './Section.astro';
+import { wedding } from '../data/wedding';
+const { schedule } = wedding;
+---
+
+<Section id="schedule" eyebrow="Как пройдёт день" title="Программа">
+	<div class="schedule">
+		{
+			schedule.map((slot) => (
+				<div class="slot">
+					<div class="time">{slot.time}</div>
+					<div class="rail" />
+					<div class="what">
+						<h3>{slot.title}</h3>
+						<p>{slot.note}</p>
+					</div>
+				</div>
+			))
+		}
+	</div>
+</Section>
+
+<style>
+	.schedule {
+		display: flex;
+		flex-direction: column;
+		max-width: 30rem;
+		margin: 0 auto;
+	}
+	.slot {
+		display: grid;
+		grid-template-columns: 4.5rem 1px 1fr;
+		gap: var(--space-3);
+	}
+	.time {
+		font-family: var(--font-display);
+		font-size: var(--text-h3);
+		font-weight: 500;
+		color: var(--color-accent-ink);
+		text-align: right;
+		line-height: 1.2;
+	}
+	.rail {
+		background: var(--color-line);
+		position: relative;
+	}
+	.rail::before {
+		content: '';
+		position: absolute;
+		top: 0.45rem;
+		left: 50%;
+		width: 9px;
+		height: 9px;
+		transform: translateX(-50%);
+		border-radius: 50%;
+		background: var(--color-accent);
+	}
+	.what {
+		padding-bottom: var(--space-4);
+	}
+	.slot:last-child .what {
+		padding-bottom: 0;
+	}
+	.what h3 {
+		font-size: var(--text-h3);
+		margin: 0 0 var(--space-1);
+	}
+	.what p {
+		margin: 0;
+		color: var(--color-text-muted);
+		font-size: var(--text-caption);
+	}
+</style>

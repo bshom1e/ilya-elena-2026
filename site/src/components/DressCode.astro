@@ -1,0 +1,93 @@
+---
+import Section from './Section.astro';
+import { wedding } from '../data/wedding';
+const { dressCode } = wedding;
+---
+
+<Section id="dresscode" eyebrow="Дресс-код" title="Ваш образ">
+	<div class="dresscode">
+		<p class="text">{dressCode.text}</p>
+
+		<div class="group">
+			<p class="group-label">Ждём вас в этих оттенках</p>
+			<div class="dots">
+				{
+					dressCode.palette.map((c) => (
+						<span class="dot">
+							<i style={`background:${c.hex}`} />
+							{c.name}
+						</span>
+					))
+				}
+			</div>
+		</div>
+
+		<div class="group">
+			<p class="group-label">Оставим невесте</p>
+			<div class="dots">
+				{
+					dressCode.avoid.map((c) => (
+						<span class="dot -no">
+							<i style={`background:${c.hex}`} />
+							{c.name}
+						</span>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</Section>
+
+<style>
+	.dresscode {
+		text-align: center;
+	}
+	.text {
+		margin: 0 auto var(--space-5);
+		max-width: 34rem;
+		color: var(--color-text-muted);
+	}
+	.group + .group {
+		margin-top: var(--space-4);
+	}
+	.group-label {
+		margin: 0 0 var(--space-3);
+		font-size: var(--text-caption);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+	}
+	.dots {
+		display: flex;
+		gap: var(--space-3);
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	.dot {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-2);
+		font-size: var(--text-caption);
+		color: var(--color-text-muted);
+	}
+	.dot i {
+		width: 3rem;
+		height: 3rem;
+		border-radius: 50%;
+		border: 1px solid var(--color-line);
+		box-shadow: inset 0 0 0 3px var(--color-bg);
+	}
+	.dot.-no {
+		position: relative;
+	}
+	.dot.-no i::after {
+		content: '';
+		position: absolute;
+		top: 1.4rem;
+		left: 50%;
+		width: 3.4rem;
+		height: 1.5px;
+		background: var(--color-text-muted);
+		transform: translateX(-50%) rotate(-45deg);
+	}
+</style>

@@ -1,0 +1,89 @@
+---
+import { wedding } from '../data/wedding';
+const { couple, dateLabel, venue } = wedding;
+---
+
+<header class="hero">
+	<p class="eyebrow">Приглашение на свадьбу</p>
+	<h1 class="names">
+		{couple.groom}
+		<span class="amp">&amp;</span>
+		{couple.bride}
+	</h1>
+	<p class="date-line">{dateLabel}</p>
+	<p class="place">{venue.name} · {venue.city}</p>
+	<a class="scroll-hint" href="#invitation" aria-label="Пролистать вниз">↓</a>
+</header>
+
+<style>
+	.hero {
+		min-height: 100svh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-3);
+		padding: var(--space-5) var(--space-4);
+		text-align: center;
+	}
+	.hero .eyebrow {
+		color: var(--color-text-muted);
+	}
+	.names {
+		margin: 0;
+		font-size: var(--text-display);
+		line-height: 1.05;
+	}
+	.names .amp {
+		display: block;
+		font-style: italic;
+		font-size: 0.45em;
+		color: var(--color-accent);
+	}
+	.date-line {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		margin: 0;
+		color: var(--color-accent-ink);
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--text-h3);
+	}
+	.date-line::before,
+	.date-line::after {
+		content: '';
+		width: 4rem;
+		height: 1px;
+		background: var(--color-accent);
+	}
+	.place {
+		margin: 0;
+		color: var(--color-text-muted);
+		font-size: var(--text-caption);
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+	.scroll-hint {
+		margin-top: var(--space-4);
+		color: var(--color-accent);
+		font-size: var(--text-caption);
+		letter-spacing: 0.2em;
+		text-decoration: none;
+		animation: bob 2s ease-in-out infinite;
+	}
+	@keyframes bob {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(0.35rem);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.scroll-hint {
+			animation: none;
+		}
+	}
+</style>

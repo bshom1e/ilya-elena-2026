@@ -1,0 +1,133 @@
+---
+import Section from './Section.astro';
+import { wedding } from '../data/wedding';
+const { dateISO } = wedding;
+---
+
+<Section id="countdown" alt eyebrow="До торжества">
+	<div class="countdown" data-target={dateISO}>
+		<div class="grid" aria-hidden="false">
+			<div class="cell"><span class="num" data-unit="days">—</span><span class="cap" data-cap="days">дней</span></div>
+			<div class="cell"><span class="num" data-unit="hours">—</span><span class="cap" data-cap="hours">часов</span></div>
+			<div class="cell"><span class="num" data-unit="minutes">—</span><span class="cap" data-cap="minutes">минут</span></div>
+			<div class="cell"><span class="num" data-unit="seconds">—</span><span class="cap" data-cap="seconds">секунд</span></div>
+		</div>
+		<p class="done" hidden>Мы стали семьёй! Спасибо, что были рядом.</p>
+	</div>
+</Section>
+
+<script>
+	type Unit = 'days' | 'hours' | 'minutes' | 'seconds';
+
+	// Русское склонение: [1, 2–4, 5–0]
+	const FORMS: Record<Unit, [string, string, string]> = {
+		days: ['день', 'дня', 'дней'],
+		hours: ['час', 'часа', 'часов'],
+		minutes: ['минута', 'минуты', 'минут'],
+		seconds: ['секунда', 'секунды', 'секунд'],
+	};
+
+	function plural(n: number, forms: [string, string, string]): string {
+		const mod100 = n % 100;
+		const mod10 = n % 10;
+		if (mod100 >= 11 && mod100 <= 14) return forms[2];
+		if (mod10 === 1) return forms[0];
+		if (mod10 >= 2 && mod10 <= 4) return forms[1];
+		return forms[2];
+	}
+
+	function initCountdown(root: HTMLElement): void {
+		const target = new Date(root.dataset.target ?? '').getTime();
+		if (Number.isNaN(target)) return;
+
+		const nums = new Map<Unit, HTMLElement>();
+		const caps = new Map<Unit, HTMLElement>();
+		root.querySelectorAll<HTMLElement>('[data-unit]').forEach((el) => nums.set(el.dataset.unit as Unit, el));
+		root.querySelectorAll<HTMLElement>('[data-cap]').forEach((el) => caps.set(el.dataset.cap as Unit, el));
+
+		const grid = root.querySelector<HTMLElement>('.grid');
+		const done = root.querySelector<HTMLElement>('.done');
+
+		function render(): boolean {
+			const diff = target - Date.now();
+			if (diff <= 0) {
+				if (grid) grid.hidden = true;
+				if (done) done.hidden = false;
+				return true; // остановить тик
+			}
+			const total = Math.floor(diff / 1000);
+			const values: Record<Unit, number> = {
+				days: Math.floor(total / 86400),
+				hours: Math.floor((total % 86400) / 3600),
+				minutes: Math.floor((total % 3600) / 60),
+				seconds: total % 60,
+			};
+			(Object.keys(values) as Unit[]).forEach((unit) => {
+				const n = values[unit];
+				const numEl = nums.get(unit);
+				const capEl = caps.get(unit);
+				if (numEl) numEl.textContent = String(n).padStart(2, '0');
+				if (capEl) capEl.textContent = plural(n, FORMS[unit]);
+			});
+			return false;
+		}
+
+		if (render()) return;
+		const id = window.setInterval(() => {
+			if (render()) window.clearInterval(id);
+		}, 1000);
+	}
+
+	document.querySelectorAll<HTMLElement>('.countdown').forEach(initCountdown);
+</script>
+
+<style>
+	.countdown {
+		text-align: center;
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: var(--space-2);
+		max-width: 30rem;
+		margin: 0 auto;
+	}
+	.cell {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-1);
+		padding: var(--space-3) var(--space-2);
+		background: var(--color-surface);
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius);
+	}
+	.num {
+		font-family: var(--font-display);
+		font-size: var(--text-h1);
+		font-weight: 500;
+		line-height: 1;
+		color: var(--color-accent-ink);
+		font-variant-numeric: tabular-nums;
+	}
+	.cap {
+		font-size: var(--text-caption);
+		color: var(--color-text-muted);
+		letter-spacing: 0.04em;
+	}
+	.done {
+		margin: 0;
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--text-h3);
+		color: var(--color-accent-ink);
+	}
+	@media (max-width: 24rem) {
+		.cell {
+			padding: var(--space-2) var(--space-1);
+		}
+		.num {
+			font-size: var(--text-h2);
+		}
+	}
+</style>

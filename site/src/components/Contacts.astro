@@ -1,0 +1,39 @@
+---
+import Section from './Section.astro';
+import { wedding } from '../data/wedding';
+const { contacts, couple, dateLabel } = wedding;
+---
+
+<Section id="contacts" alt eyebrow="Остались вопросы?">
+	<div class="contacts">
+		<p class="text">Напишите нам — с радостью подскажем по дороге, программе и всему остальному.</p>
+		<a class="btn btn-ghost" href={contacts.telegramUrl} target="_blank" rel="noopener noreferrer">
+			Telegram {contacts.telegram}
+		</a>
+		<p class="signoff">
+			{couple.groom} &amp; {couple.bride} · {dateLabel}
+		</p>
+	</div>
+</Section>
+
+<style>
+	.contacts {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-3);
+		text-align: center;
+	}
+	.text {
+		margin: 0;
+		max-width: 30rem;
+		color: var(--color-text-muted);
+	}
+	.signoff {
+		margin: var(--space-3) 0 0;
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--text-h3);
+		color: var(--color-accent-ink);
+	}
+</style>

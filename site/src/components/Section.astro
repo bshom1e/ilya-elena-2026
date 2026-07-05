@@ -1,0 +1,57 @@
+---
+// Общий каркас секции: вертикальный ритм, надзаголовок + заголовок,
+// чередование фона и ограничение ширины контента.
+interface Props {
+	id?: string;
+	eyebrow?: string;
+	title?: string;
+	/** Тёплый беж вместо айвори — для чередования секций */
+	alt?: boolean;
+	/** Снять ограничение ширины контента (галерея, карта) */
+	wide?: boolean;
+	/** Дополнительный класс на <section> */
+	class?: string;
+}
+const { id, eyebrow, title, alt = false, wide = false, class: className } = Astro.props;
+---
+
+<section id={id} class:list={['section', { '-alt': alt }, className]}>
+	<div class:list={['inner', { '-wide': wide }]}>
+		{
+			(eyebrow || title) && (
+				<header class="head">
+					{eyebrow && <p class="eyebrow">{eyebrow}</p>}
+					{title && <h2 class="title">{title}</h2>}
+				</header>
+			)
+		}
+		<slot />
+	</div>
+</section>
+
+<style>
+	.section {
+		padding: var(--section-pad-y) var(--section-pad-x);
+	}
+	.section.-alt {
+		background: var(--color-bg-alt);
+	}
+	.inner {
+		max-width: var(--content-width);
+		margin: 0 auto;
+	}
+	.inner.-wide {
+		max-width: 64rem;
+	}
+	.head {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-2);
+		margin-bottom: var(--space-5);
+		text-align: center;
+	}
+	.title {
+		font-size: var(--text-h2);
+	}
+</style>

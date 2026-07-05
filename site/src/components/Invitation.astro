@@ -1,0 +1,34 @@
+---
+import Section from './Section.astro';
+import { wedding } from '../data/wedding';
+const { invitation } = wedding;
+---
+
+<Section id="invitation" eyebrow="Дорогие гости">
+	<div class="invite">
+		<span class="ornament">&#10086;</span>
+		<p class="lead">{invitation.lead}</p>
+		<p class="body">{invitation.body}</p>
+	</div>
+</Section>
+
+<style>
+	.invite {
+		text-align: center;
+	}
+	.ornament {
+		display: block;
+		margin-bottom: var(--space-4);
+		color: var(--color-accent);
+		font-size: var(--text-h2);
+		line-height: 1;
+	}
+	.lead {
+		margin: 0 0 var(--space-3);
+		font-size: var(--text-lg);
+	}
+	.body {
+		margin: 0;
+		color: var(--color-text-muted);
+	}
+</style>

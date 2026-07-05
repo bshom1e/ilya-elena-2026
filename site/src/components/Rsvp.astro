@@ -1,0 +1,168 @@
+---
+import Section from './Section.astro';
+// Разметка полей по контракту RSVP. Отправка подключается позже.
+---
+
+<Section id="rsvp" eyebrow="Будете с нами?" title="Подтвердите присутствие">
+	<form class="rsvp" novalidate>
+		<div class="field">
+			<label for="rsvp-name">Ваше имя</label>
+			<input class="input" id="rsvp-name" name="name" type="text" placeholder="Имя и фамилия" autocomplete="name" />
+		</div>
+
+		<div class="field">
+			<label>Придёте?</label>
+			<div class="choices">
+				<label class="choice"><input type="radio" name="attending" value="yes" checked /> С радостью приду</label>
+				<label class="choice"><input type="radio" name="attending" value="no" /> К сожалению, не смогу</label>
+			</div>
+		</div>
+
+		<div class="field">
+			<label for="rsvp-count">Сколько вас будет</label>
+			<select class="input" id="rsvp-count" name="guestsCount">
+				<option value="1">1 — только я</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</select>
+		</div>
+
+		<div class="field">
+			<label>Предпочтения по напиткам</label>
+			<div class="choices">
+				<label class="choice"><input type="checkbox" name="alcohol" value="red" /> Красное вино</label>
+				<label class="choice"><input type="checkbox" name="alcohol" value="white" /> Белое вино</label>
+				<label class="choice"><input type="checkbox" name="alcohol" value="champagne" /> Шампанское</label>
+				<label class="choice"><input type="checkbox" name="alcohol" value="strong" /> Крепкие напитки</label>
+				<label class="choice"><input type="checkbox" name="alcohol" value="none" /> Не пью</label>
+			</div>
+		</div>
+
+		<div class="field">
+			<label for="rsvp-diet">Аллергии или особенности питания</label>
+			<input class="input" id="rsvp-diet" name="dietary" type="text" placeholder="Например: вегетарианство, аллергия на орехи" />
+		</div>
+
+		<div class="field">
+			<label for="rsvp-msg">Пожелание молодожёнам</label>
+			<textarea class="textarea" id="rsvp-msg" name="message" placeholder="Пара тёплых слов…"></textarea>
+		</div>
+
+		{/* honeypot: скрытое поле для отсева ботов, задача 05 */}
+		<input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+		<button class="btn btn-primary" type="button" disabled>Форма заработает скоро</button>
+	</form>
+</Section>
+
+<style>
+	.rsvp {
+		max-width: 26rem;
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+	.field > label {
+		font-size: var(--text-caption);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+	}
+	.input,
+	.textarea {
+		width: 100%;
+		padding: 0.75em 1em;
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius);
+		background: var(--color-surface);
+		color: var(--color-text);
+		font-family: var(--font-body);
+		font-size: var(--text-base);
+		transition: border-color var(--transition), box-shadow var(--transition);
+	}
+	.input::placeholder,
+	.textarea::placeholder {
+		color: var(--color-text-muted);
+		opacity: 0.7;
+	}
+	.input:focus,
+	.textarea:focus {
+		outline: none;
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 3px rgba(176, 141, 122, 0.18);
+	}
+	.textarea {
+		min-height: 6em;
+		resize: vertical;
+	}
+	.choices {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+	.choice {
+		display: flex;
+		align-items: center;
+		gap: 0.65em;
+		font-size: var(--text-base);
+		cursor: pointer;
+	}
+	.choice input {
+		appearance: none;
+		width: 1.25em;
+		height: 1.25em;
+		margin: 0;
+		border: 1.5px solid var(--color-accent);
+		background: var(--color-surface);
+		cursor: pointer;
+		display: grid;
+		place-content: center;
+		transition: background var(--transition);
+	}
+	.choice input[type='radio'] {
+		border-radius: 50%;
+	}
+	.choice input[type='checkbox'] {
+		border-radius: 0.2em;
+	}
+	.choice input::before {
+		content: '';
+		width: 0.55em;
+		height: 0.55em;
+		transform: scale(0);
+		transition: transform var(--transition);
+		background: var(--color-accent-ink);
+	}
+	.choice input[type='radio']::before {
+		border-radius: 50%;
+	}
+	.choice input:checked {
+		border-color: var(--color-accent-ink);
+	}
+	.choice input:checked::before {
+		transform: scale(1);
+	}
+	.choice input:focus-visible {
+		outline: 2px solid var(--color-accent-ink);
+		outline-offset: 2px;
+	}
+	.btn-primary {
+		margin-top: var(--space-2);
+	}
+	/* honeypot прячем и от глаз, и от скринридеров */
+	.honeypot {
+		position: absolute;
+		left: -9999px;
+		width: 1px;
+		height: 1px;
+		opacity: 0;
+		pointer-events: none;
+	}
+</style>

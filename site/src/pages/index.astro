@@ -1,50 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Invitation from '../components/Invitation.astro';
+import Countdown from '../components/Countdown.astro';
+import Schedule from '../components/Schedule.astro';
+import Venue from '../components/Venue.astro';
+import DressCode from '../components/DressCode.astro';
+import Gallery from '../components/Gallery.astro';
+import Rsvp from '../components/Rsvp.astro';
+import Contacts from '../components/Contacts.astro';
 ---
 
 <Base title="Илья и Елена — 06.08.2026">
+	<Hero />
 	<main>
-		<p class="eyebrow">Приглашение на свадьбу</p>
-		<h1>Илья <span class="heart">♥</span> Елена</h1>
-		<p class="date">06.08.2026</p>
+		<Invitation />
+		<Countdown />
+		<Schedule />
+		<Venue />
+		<DressCode />
+		<Gallery />
+		<Rsvp />
+		<Contacts />
 	</main>
 </Base>
-
-<style>
-	main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 100svh;
-		padding: var(--space-4);
-		text-align: center;
-	}
-
-	.eyebrow {
-		margin: 0;
-		color: var(--color-text-muted);
-		font-size: var(--text-caption);
-		letter-spacing: 0.22em;
-		text-transform: uppercase;
-	}
-
-	h1 {
-		margin: var(--space-3) 0;
-		font-size: var(--text-display);
-		line-height: 1.05;
-	}
-
-	.heart {
-		color: var(--color-accent);
-	}
-
-	.date {
-		margin: 0;
-		color: var(--color-accent-ink);
-		font-family: var(--font-display);
-		font-style: italic;
-		font-size: var(--text-h3);
-		letter-spacing: 0.08em;
-	}
-</style>
