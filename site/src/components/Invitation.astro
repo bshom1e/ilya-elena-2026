@@ -1,14 +1,23 @@
 ---
 import Section from './Section.astro';
-import { wedding } from '../data/wedding';
+import { wedding, type Personalization } from '../data/wedding';
+
+interface Props {
+	/** На именной странице — персональные обращение и тексты */
+	personal?: Personalization;
+}
+const { personal } = Astro.props;
 const { invitation } = wedding;
+const lead = personal?.lead ?? invitation.lead;
+const body = personal?.body ?? invitation.body;
 ---
 
-<Section id="invitation" eyebrow="Дорогие гости">
+<Section id="invitation" eyebrow={personal ? 'Приглашение' : 'Дорогие гости'}>
 	<div class="invite">
 		<span class="ornament">&#10086;</span>
-		<p class="lead">{invitation.lead}</p>
-		<p class="body">{invitation.body}</p>
+		{personal && <p class="greeting">{personal.greeting}</p>}
+		<p class="lead">{lead}</p>
+		<p class="body">{body}</p>
 	</div>
 </Section>
 
@@ -22,6 +31,13 @@ const { invitation } = wedding;
 		color: var(--color-accent);
 		font-size: var(--text-h2);
 		line-height: 1;
+	}
+	.greeting {
+		margin: 0 0 var(--space-3);
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--text-h2);
+		color: var(--color-accent-ink);
 	}
 	.lead {
 		margin: 0 0 var(--space-3);

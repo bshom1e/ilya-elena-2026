@@ -1,0 +1,5 @@
+[
+	{ "slug": "anna-sergey", "names": "Анна и Сергей", "address": "Дорогие", "formal": true, "maxGuests": 2 },
+	{ "slug": "mariya", "names": "Мария", "address": "Дорогая", "formal": false, "maxGuests": 1 },
+	{ "slug": "dmitriy", "names": "Дмитрий Николаевич", "address": "Дорогой", "formal": true, "maxGuests": 2 }
+]

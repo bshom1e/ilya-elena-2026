@@ -52,6 +52,52 @@ export interface Wedding {
 	};
 }
 
+/** Именной гость для персональной ссылки …/g/<slug>. Список — в guests.json. */
+export interface Guest {
+	/** Латиница-кебаб, без фамилий: `anna-sergey` */
+	slug: string;
+	/** Имена в именительном падеже, как в обращении: «Анна и Сергей» */
+	names: string;
+	/** Приветственное слово; заодно кодирует число (мн./ед.) */
+	address: 'Дорогие' | 'Дорогая' | 'Дорогой';
+	/** Обращение на «вы». Для пары (address === 'Дорогие') всегда «вы». */
+	formal: boolean;
+	/** Максимум человек в ответе RSVP; по умолчанию без ограничения сверху */
+	maxGuests?: number;
+}
+
+/** Готовые персональные тексты для гостевой страницы — без склонения имён. */
+export interface Personalization {
+	names: string;
+	/** Hero: «Рады видеть вас, Анна и Сергей» */
+	heroLine: string;
+	/** Invitation: «Дорогие Анна и Сергей!» */
+	greeting: string;
+	lead: string;
+	body: string;
+}
+
+/**
+ * Собирает персональные тексты из полей гостя. Единственный источник склонений
+ * ты/вы и ед./мн. — поля `address` и `formal`, никаких догадок по строке имён.
+ */
+export function personalize(guest: Guest): Personalization {
+	// Пара — всегда «вы»; для одного гостя число берём из formal.
+	const plural = guest.address === 'Дорогие';
+	const formal = plural || guest.formal;
+	const you = formal ? 'вас' : 'тебя';
+	const withYou = formal ? 'с вами' : 'с тобой';
+	const come = formal ? 'приезжайте' : 'приезжай';
+	const your = formal ? 'ваше' : 'твоё';
+	return {
+		names: guest.names,
+		heroLine: `Рады видеть ${you}, ${guest.names}`,
+		greeting: `${guest.address} ${guest.names}!`,
+		lead: `Мы будем счастливы разделить ${withYou} один из самых важных дней нашей жизни.`,
+		body: `В этот день мы станем семьёй и хотим, чтобы рядом были самые близкие люди. Будет тёплый вечер среди сосен, добрые слова и танцы до ночи — ${come}, ${your} присутствие для нас бесценно.`,
+	};
+}
+
 const coords = { lat: 64.498069, lng: 40.354858 };
 const yandexOid = '139225003336';
 

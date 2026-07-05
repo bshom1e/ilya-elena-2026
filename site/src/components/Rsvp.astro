@@ -1,10 +1,20 @@
 ---
 import Section from './Section.astro';
 // Разметка полей по контракту RSVP. Отправка подключается позже.
+
+interface Props {
+	/** slug именного гостя — уходит в скрытое поле контракта RSVP */
+	guest?: string;
+	/** Верхняя граница числа гостей в ответе */
+	maxGuests?: number;
+}
+const { guest, maxGuests = 5 } = Astro.props;
+const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 ---
 
 <Section id="rsvp" eyebrow="Будете с нами?" title="Подтвердите присутствие">
 	<form class="rsvp" novalidate>
+		{guest && <input type="hidden" name="guest" value={guest} />}
 		<div class="field">
 			<label for="rsvp-name">Ваше имя</label>
 			<input class="input" id="rsvp-name" name="name" type="text" placeholder="Имя и фамилия" autocomplete="name" />
@@ -21,11 +31,7 @@ import Section from './Section.astro';
 		<div class="field">
 			<label for="rsvp-count">Сколько вас будет</label>
 			<select class="input" id="rsvp-count" name="guestsCount">
-				<option value="1">1 — только я</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
+				{counts.map((n) => <option value={n}>{n === 1 ? '1 — только я' : n}</option>)}
 			</select>
 		</div>
 

@@ -1,9 +1,16 @@
 ---
-import { wedding } from '../data/wedding';
+import { wedding, type Personalization } from '../data/wedding';
+
+interface Props {
+	/** На именной странице — персональное обращение над именами пары */
+	personal?: Personalization;
+}
+const { personal } = Astro.props;
 const { couple, dateLabel, venue } = wedding;
 ---
 
 <header class="hero">
+	{personal && <p class="hello">{personal.heroLine}</p>}
 	<p class="eyebrow">Приглашение на свадьбу</p>
 	<h1 class="names">
 		{couple.groom}
@@ -28,6 +35,13 @@ const { couple, dateLabel, venue } = wedding;
 	}
 	.hero .eyebrow {
 		color: var(--color-text-muted);
+	}
+	.hello {
+		margin: 0;
+		color: var(--color-accent-ink);
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--text-h3);
 	}
 	.names {
 		margin: 0;

@@ -1,0 +1,40 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Invitation from '../../components/Invitation.astro';
+import Countdown from '../../components/Countdown.astro';
+import Schedule from '../../components/Schedule.astro';
+import Venue from '../../components/Venue.astro';
+import DressCode from '../../components/DressCode.astro';
+import Gallery from '../../components/Gallery.astro';
+import Rsvp from '../../components/Rsvp.astro';
+import Contacts from '../../components/Contacts.astro';
+import { personalize, type Guest } from '../../data/wedding';
+import guests from '../../data/guests.json';
+
+// Одна статическая страница на каждого гостя из guests.json.
+// Несуществующий slug при статике отдаёт 404 автоматически.
+export function getStaticPaths() {
+	return (guests as Guest[]).map((guest) => ({
+		params: { slug: guest.slug },
+		props: { guest },
+	}));
+}
+
+const { guest } = Astro.props as { guest: Guest };
+const personal = personalize(guest);
+---
+
+<Base title="Илья и Елена — 06.08.2026" noindex>
+	<Hero personal={personal} />
+	<main>
+		<Invitation personal={personal} />
+		<Countdown />
+		<Schedule />
+		<Venue />
+		<DressCode />
+		<Gallery />
+		<Rsvp guest={guest.slug} maxGuests={guest.maxGuests} />
+		<Contacts />
+	</main>
+</Base>
