@@ -148,6 +148,5 @@ export const wedding: Wedding = {
 		telegram: '@hom1ee',
 		telegramUrl: 'https://t.me/hom1ee',
 	},
-	// TODO: заменить на реальный URL после `wrangler deploy` (см. rsvp-worker/)
-	rsvpEndpoint: 'https://rsvp-worker.hom1ee.workers.dev',
+	rsvpEndpoint: 'https://rsvp-worker.bshom1e.workers.dev',
 };
