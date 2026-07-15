@@ -51,11 +51,6 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 			<input class="input" id="rsvp-diet" name="dietary" type="text" placeholder="Например: вегетарианство, аллергия на орехи" />
 		</div>
 
-		<div class="field">
-			<label for="rsvp-msg">Пожелание молодожёнам</label>
-			<textarea class="textarea" id="rsvp-msg" name="message" placeholder="Пара тёплых слов…"></textarea>
-		</div>
-
 		{/* honeypot: скрытое поле для отсева ботов */}
 		<input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
 

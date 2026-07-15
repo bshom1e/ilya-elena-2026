@@ -9,11 +9,18 @@ const initial = /^[A-Za-zА-Яа-яЁё]/.test(host.name) ? host.name[0].toUpper
 
 <Section id="host" class="host-section" eyebrow={host.role} title="Кто рядом с нами">
 	<div class="host">
-		<div class="portrait" aria-hidden="true">
+		<a class="portrait" href={host.url} target="_blank" rel="noopener noreferrer" aria-label={`Профиль: ${host.name}`}>
 			<span class="mono">{initial}</span>
-		</div>
-		<p class="name">{host.name}</p>
+		</a>
+		<a class="name" href={host.url} target="_blank" rel="noopener noreferrer">{host.name}</a>
 		<p class="note">{host.note}</p>
+
+		<div class="surprise">
+			<p>{host.surprise}</p>
+			<a class="btn btn-ghost" href={host.surpriseUrl} target="_blank" rel="noopener noreferrer">
+				Написать Наталье
+			</a>
+		</div>
 	</div>
 </Section>
 
@@ -40,6 +47,12 @@ const initial = /^[A-Za-zА-Яа-яЁё]/.test(host.name) ? host.name[0].toUpper
 		background: var(--color-surface);
 		border: 1px solid var(--color-line);
 		box-shadow: 0 10px 30px -18px rgba(61, 56, 51, 0.5);
+		text-decoration: none;
+		transition: transform var(--transition), box-shadow var(--transition);
+	}
+	.portrait:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 16px 34px -18px rgba(61, 56, 51, 0.6);
 	}
 	.portrait::after {
 		content: '';
@@ -61,10 +74,32 @@ const initial = /^[A-Za-zА-Яа-яЁё]/.test(host.name) ? host.name[0].toUpper
 		font-family: var(--font-display);
 		font-size: var(--text-h2);
 		color: var(--color-accent-ink);
+		text-decoration: none;
+	}
+	.name:hover {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 	}
 	.note {
 		margin: 0;
 		max-width: 30rem;
 		color: var(--color-text-muted);
+	}
+	.surprise {
+		margin-top: var(--space-3);
+		padding: var(--space-4);
+		max-width: 32rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-3);
+		background: var(--color-surface);
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius);
+	}
+	.surprise p {
+		margin: 0;
+		color: var(--color-text-muted);
+		font-size: var(--text-base);
 	}
 </style>
