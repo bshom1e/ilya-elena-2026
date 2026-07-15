@@ -19,6 +19,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		{/* Помечаем документ как «с JS» до отрисовки — скролл-анимации прячут контент
+		    только когда JS есть; без него всё видно сразу. */}
+		<script is:inline>document.documentElement.classList.add('js');</script>
 		<meta name="description" content={description} />
 		{noindex && <meta name="robots" content="noindex" />}
 		<link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
@@ -27,6 +30,28 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 	</head>
 	<body>
 		<slot />
+		<script>
+			// Плавное появление секций при скролле. Уважаем prefers-reduced-motion
+			// и деградируем без сюрпризов: без JS класса .js нет — контент виден.
+			const reveals = document.querySelectorAll<HTMLElement>('[data-reveal]');
+			const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (reduce || !('IntersectionObserver' in window)) {
+				reveals.forEach((el) => el.classList.add('is-revealed'));
+			} else {
+				const io = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (entry.isIntersecting) {
+								entry.target.classList.add('is-revealed');
+								io.unobserve(entry.target);
+							}
+						});
+					},
+					{ rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
+				);
+				reveals.forEach((el) => io.observe(el));
+			}
+		</script>
 	</body>
 </html>
 
@@ -110,5 +135,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 	.btn:focus-visible {
 		outline: 2px solid var(--color-accent-ink);
 		outline-offset: 2px;
+	}
+
+	/* Скролл-анимация появления. Прячем контент только при активном JS (html.js),
+	   чтобы без скриптов страница осталась читаемой. */
+	html.js [data-reveal] {
+		opacity: 0;
+		transform: translateY(24px);
+		transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+		will-change: opacity, transform;
+	}
+	html.js [data-reveal].is-revealed {
+		opacity: 1;
+		transform: none;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		html.js [data-reveal] {
+			opacity: 1;
+			transform: none;
+			transition: none;
+		}
 	}
 </style>

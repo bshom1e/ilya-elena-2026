@@ -9,20 +9,6 @@ const { dressCode } = wedding;
 		<p class="text">{dressCode.text}</p>
 
 		<div class="group">
-			<p class="group-label">Ждём вас в этих оттенках</p>
-			<div class="dots">
-				{
-					dressCode.palette.map((c) => (
-						<span class="dot">
-							<i style={`background:${c.hex}`} />
-							{c.name}
-						</span>
-					))
-				}
-			</div>
-		</div>
-
-		<div class="group">
 			<p class="group-label">Оставим невесте</p>
 			<div class="dots">
 				{

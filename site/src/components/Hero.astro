@@ -1,4 +1,6 @@
 ---
+import { getImage } from 'astro:assets';
+import heroSrc from '../assets/hero.jpg';
 import { wedding, type Personalization } from '../data/wedding';
 
 interface Props {
@@ -7,23 +9,32 @@ interface Props {
 }
 const { personal } = Astro.props;
 const { couple, dateLabel, venue } = wedding;
+
+// Фон в нативном разрешении (исходник небольшой — апскейл только мылит) и без
+// пережатия. Читаемость даёт не сплошная пелена, а свечение по центру под текстом.
+const hero = await getImage({ src: heroSrc, format: 'webp', quality: 86 });
 ---
 
-<header class="hero">
-	{personal && <p class="hello">{personal.heroLine}</p>}
-	<p class="eyebrow">Приглашение на свадьбу</p>
-	<h1 class="names">
-		{couple.groom}
-		<span class="amp">&amp;</span>
-		{couple.bride}
-	</h1>
-	<p class="date-line">{dateLabel}</p>
-	<p class="place">{venue.name} · {venue.city}</p>
+<header class="hero" style={`--hero-img:url(${hero.src})`}>
+	<div class="hero-inner">
+		{personal && <p class="hello">{personal.heroLine}</p>}
+		<p class="eyebrow">Приглашение на свадьбу</p>
+		<h1 class="names">
+			{couple.groom}
+			<span class="amp">&amp;</span>
+			{couple.bride}
+		</h1>
+		<p class="date-line">{dateLabel}</p>
+		<p class="place">{venue.name} · {venue.city}</p>
+	</div>
 	<a class="scroll-hint" href="#invitation" aria-label="Пролистать вниз">↓</a>
 </header>
 
 <style>
 	.hero {
+		position: relative;
+		isolation: isolate;
+		overflow: hidden;
 		min-height: 100svh;
 		display: flex;
 		flex-direction: column;
@@ -32,6 +43,40 @@ const { couple, dateLabel, venue } = wedding;
 		gap: var(--space-3);
 		padding: var(--space-5) var(--space-4);
 		text-align: center;
+	}
+	/* Фото на заднем плане под лёгким айвори-градиентом + медленный зум */
+	.hero::before {
+		content: '';
+		position: absolute;
+		inset: -2%;
+		z-index: -1;
+		background-image:
+			/* свечение по центру — держит текст читаемым, но не глушит всё фото */
+			radial-gradient(
+				ellipse 82% 58% at 50% 48%,
+				rgba(250, 247, 242, 0.74) 0%,
+				rgba(250, 247, 242, 0.34) 46%,
+				rgba(250, 247, 242, 0) 74%
+			),
+			/* лёгкий верхний налёт и плотный низ — плавный переход в страницу */
+			linear-gradient(
+				to bottom,
+				rgba(250, 247, 242, 0.28) 0%,
+				rgba(250, 247, 242, 0.18) 44%,
+				rgba(250, 247, 242, 0.9) 100%
+			),
+			var(--hero-img);
+		background-size: cover;
+		background-position: center 40%;
+		filter: saturate(1.04) contrast(1.03);
+		animation: hero-zoom 30s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+	.hero-inner {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-3);
+		margin-top: 16vh;
 	}
 	.hero .eyebrow {
 		color: var(--color-text-muted);
@@ -79,12 +124,59 @@ const { couple, dateLabel, venue } = wedding;
 		text-transform: uppercase;
 	}
 	.scroll-hint {
-		margin-top: var(--space-4);
+		position: absolute;
+		bottom: var(--space-4);
 		color: var(--color-accent);
 		font-size: var(--text-caption);
 		letter-spacing: 0.2em;
 		text-decoration: none;
 		animation: bob 2s ease-in-out infinite;
+	}
+
+	/* Плавный выход контента при загрузке — по очереди, без «цирка» */
+	.hero-inner > * {
+		opacity: 0;
+		animation: hero-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	}
+	.hello {
+		animation-delay: 0.1s;
+	}
+	.hero-inner > .eyebrow {
+		animation-delay: 0.2s;
+	}
+	.names {
+		animation-delay: 0.32s;
+	}
+	.date-line {
+		animation-delay: 0.46s;
+	}
+	.place {
+		animation-delay: 0.58s;
+	}
+	.scroll-hint {
+		opacity: 0;
+		animation:
+			hero-in 0.8s ease 0.9s forwards,
+			bob 2s ease-in-out 1.7s infinite;
+	}
+
+	@keyframes hero-in {
+		from {
+			opacity: 0;
+			transform: translateY(14px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+	@keyframes hero-zoom {
+		from {
+			transform: scale(1.04);
+		}
+		to {
+			transform: scale(1);
+		}
 	}
 	@keyframes bob {
 		0%,
@@ -96,8 +188,12 @@ const { couple, dateLabel, venue } = wedding;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
+		.hero::before,
+		.hero-inner > *,
 		.scroll-hint {
 			animation: none;
+			opacity: 1;
+			transform: none;
 		}
 	}
 </style>

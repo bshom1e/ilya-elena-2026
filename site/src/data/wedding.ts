@@ -39,6 +39,13 @@ export interface Wedding {
 		mapEmbed: string;
 	};
 	schedule: ScheduleItem[];
+	host: {
+		/** Роль над именем: «Ведущая вечера» */
+		role: string;
+		/** Имя ведущей; пока заглушка */
+		name: string;
+		note: string;
+	};
 	dressCode: {
 		text: string;
 		/** Оттенки, в которых ждём гостей */
@@ -129,6 +136,11 @@ export const wedding: Wedding = {
 		{ time: '17:30', title: 'Банкет', note: 'Праздничный ужин, тосты и поздравления' },
 		{ time: '22:00', title: 'Открытие танцпола', note: 'Танцуем до самой ночи' },
 	],
+	host: {
+		role: 'Ведущая вечера',
+		name: '<Ведущая>',
+		note: 'Подарит вечеру настроение, соберёт всех вместе и проведёт нас через каждый важный момент дня.',
+	},
 	dressCode: {
 		text: 'Ждём вас в элегантных образах! Убедительная просьба к дамам: пожалуйста, избегайте белого, молочного и шампанского — оставим эти оттенки для невесты.',
 		palette: [
@@ -145,8 +157,8 @@ export const wedding: Wedding = {
 		],
 	},
 	contacts: {
-		telegram: '@hom1ee',
-		telegramUrl: 'https://t.me/hom1ee',
+		telegram: '@elgrudina394',
+		telegramUrl: 'https://t.me/elgrudina394',
 	},
 	rsvpEndpoint: 'https://rsvp-worker.bshom1e.workers.dev',
 };

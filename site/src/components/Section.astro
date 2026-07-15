@@ -16,7 +16,7 @@ const { id, eyebrow, title, alt = false, wide = false, class: className } = Astr
 ---
 
 <section id={id} class:list={['section', { '-alt': alt }, className]}>
-	<div class:list={['inner', { '-wide': wide }]}>
+	<div class:list={['inner', { '-wide': wide }]} data-reveal>
 		{
 			(eyebrow || title) && (
 				<header class="head">
