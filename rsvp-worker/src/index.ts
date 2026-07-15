@@ -140,13 +140,19 @@ export default {
 			return json({ ok: true }, 200, origin);
 		}
 
-		const tgRes = await fetch(`https://api.telegram.org/bot${env.TG_BOT_TOKEN}/sendMessage`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ chat_id: env.TG_CHAT_ID, text: renderMessage(parsed), parse_mode: 'HTML' }),
-		});
+		const chatIds = env.TG_CHAT_ID.split(',').map((id) => id.trim()).filter(Boolean);
+		const text = renderMessage(parsed);
+		const results = await Promise.all(
+			chatIds.map((chatId) =>
+				fetch(`https://api.telegram.org/bot${env.TG_BOT_TOKEN}/sendMessage`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
+				}),
+			),
+		);
 
-		if (!tgRes.ok) {
+		if (!results.some((r) => r.ok)) {
 			return json({ ok: false, error: 'telegram_failed' }, 502, origin);
 		}
 
