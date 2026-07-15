@@ -12,17 +12,17 @@ const { couple, dateLabel, venue } = wedding;
 ---
 
 <header class="hero">
-	<div class="hero-inner">
-		<figure class="photo">
-			<Image
-				src={heroSrc}
-				alt={`${couple.groom} и ${couple.bride}`}
-				widths={[414, 640, 828]}
-				sizes="(min-width: 40rem) 24rem, 82vw"
-				loading="eager"
-				fetchpriority="high"
-			/>
-		</figure>
+	<figure class="photo">
+		<Image
+			src={heroSrc}
+			alt={`${couple.groom} и ${couple.bride}`}
+			widths={[414, 640, 828]}
+			sizes="(min-width: 42rem) 40rem, 100vw"
+			loading="eager"
+			fetchpriority="high"
+		/>
+	</figure>
+	<div class="hero-text">
 		{personal && <p class="hello">{personal.heroLine}</p>}
 		<p class="eyebrow">Приглашение на свадьбу</p>
 		<h1 class="names">
@@ -44,37 +44,27 @@ const { couple, dateLabel, venue } = wedding;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: var(--space-5) var(--space-4);
+		gap: var(--space-4);
+		padding: var(--space-5) 0;
 		text-align: center;
 	}
-	.hero-inner {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--space-3);
-	}
-	/* Фото целиком, без кропа — рамка подстраивается под пропорции снимка */
+	/* Крупное фото целиком, без кропа — во всю ширину (на десктопе ограничено) */
 	.photo {
-		position: relative;
-		margin: 0 0 var(--space-2);
-		width: min(82vw, 24rem);
-		border-radius: var(--radius);
-		overflow: hidden;
-		box-shadow: 0 26px 55px -26px rgba(61, 56, 51, 0.6);
+		margin: 0;
+		width: min(100vw, 40rem);
+		box-shadow: 0 26px 55px -28px rgba(61, 56, 51, 0.6);
 	}
 	.photo :global(img) {
 		display: block;
 		width: 100%;
 		height: auto;
 	}
-	/* Тонкая светлая линия внутри — классическая «паспарту»-рамка */
-	.photo::after {
-		content: '';
-		position: absolute;
-		inset: 0.55rem;
-		border: 1px solid rgba(255, 253, 248, 0.65);
-		border-radius: calc(var(--radius) - 1px);
-		pointer-events: none;
+	.hero-text {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-3);
+		padding: 0 var(--space-4);
 	}
 	.hero .eyebrow {
 		color: var(--color-text-muted);
@@ -131,8 +121,16 @@ const { couple, dateLabel, venue } = wedding;
 		animation: bob 2s ease-in-out infinite;
 	}
 
+	@media (min-width: 42rem) {
+		.photo {
+			border-radius: var(--radius);
+			overflow: hidden;
+		}
+	}
+
 	/* Плавный выход при загрузке — по очереди, без «цирка» */
-	.hero-inner > * {
+	.photo,
+	.hero-text > * {
 		opacity: 0;
 		animation: hero-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 	}
@@ -142,7 +140,7 @@ const { couple, dateLabel, venue } = wedding;
 	.hello {
 		animation-delay: 0.22s;
 	}
-	.hero-inner > .eyebrow {
+	.hero-text > .eyebrow {
 		animation-delay: 0.32s;
 	}
 	.names {
@@ -181,7 +179,8 @@ const { couple, dateLabel, venue } = wedding;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.hero-inner > *,
+		.photo,
+		.hero-text > *,
 		.scroll-hint {
 			animation: none;
 			opacity: 1;
