@@ -15,10 +15,6 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 <Section id="rsvp" eyebrow="Будете с нами?" title="Подтвердите присутствие">
 	<form class="rsvp" novalidate data-endpoint={wedding.rsvpEndpoint}>
 		{guest && <input type="hidden" name="guest" value={guest} />}
-		<div class="field">
-			<label for="rsvp-name">Ваше имя</label>
-			<input class="input" id="rsvp-name" name="name" type="text" placeholder="Имя и фамилия" autocomplete="name" required />
-		</div>
 
 		<div class="field">
 			<label>Придёте?</label>
@@ -26,6 +22,11 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 				<label class="choice"><input type="radio" name="attending" value="yes" checked /> С радостью приду</label>
 				<label class="choice"><input type="radio" name="attending" value="no" /> К сожалению, не смогу</label>
 			</div>
+		</div>
+
+		<div class="field" data-if-declined hidden>
+			<label for="rsvp-soloname">Ваше имя</label>
+			<input class="input" id="rsvp-soloname" name="soloname" type="text" placeholder="Имя и фамилия" autocomplete="name" />
 		</div>
 
 		<div class="field" data-if-attending>
@@ -36,12 +37,20 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 		</div>
 
 		<div class="field" data-if-attending>
-			<label>Напитки и аллергии</label>
-			{maxGuests > 1 && <p class="hint">Заполните на каждого — у всех по-разному</p>}
+			<label>Анкета гостей</label>
+			{maxGuests > 1 && <p class="hint">Заполните на каждого отдельно</p>}
 			<div class="people">
 				{counts.map((n) => (
 					<fieldset class="person" data-person={n - 1} hidden={n > 1}>
 						{maxGuests > 1 && <legend>{n === 1 ? 'Вы' : `Гость ${n}`}</legend>}
+						<input
+							class="input person-name"
+							name={`pname-${n - 1}`}
+							type="text"
+							placeholder="Имя и фамилия"
+							autocomplete={n === 1 ? 'name' : 'off'}
+							aria-label="Имя"
+						/>
 						<div class="choices">
 							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="red" /> Красное вино</label>
 							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="white" /> Белое вино</label>
@@ -69,14 +78,18 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 		const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
 		const status = form.querySelector<HTMLParagraphElement>('.status');
 		const attendingInputs = form.querySelectorAll<HTMLInputElement>('input[name="attending"]');
-		const conditionalFields = form.querySelectorAll<HTMLElement>('[data-if-attending]');
+		const attendingFields = form.querySelectorAll<HTMLElement>('[data-if-attending]');
+		const declinedFields = form.querySelectorAll<HTMLElement>('[data-if-declined]');
 		const countSelect = form.querySelector<HTMLSelectElement>('select[name="guestsCount"]');
 		const personFieldsets = form.querySelectorAll<HTMLFieldSetElement>('fieldset.person');
 
 		function syncAttendance(): void {
 			const attending = form.querySelector<HTMLInputElement>('input[name="attending"]:checked')?.value === 'yes';
-			conditionalFields.forEach((field) => {
+			attendingFields.forEach((field) => {
 				field.hidden = !attending;
+			});
+			declinedFields.forEach((field) => {
+				field.hidden = attending;
 			});
 		}
 		attendingInputs.forEach((input) => input.addEventListener('change', syncAttendance));
@@ -125,13 +138,17 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 			const guestsCount = attending ? Number(data.get('guestsCount') ?? 1) : 1;
 			const people = attending
 				? Array.from({ length: guestsCount }, (_, i) => ({
+						name: String(data.get(`pname-${i}`) ?? '').trim(),
 						alcohol: data.getAll(`alcohol-${i}`) as string[],
 						dietary: String(data.get(`diet-${i}`) ?? '').trim(),
 					}))
 				: [];
+			const name = attending
+				? (people[0]?.name ?? '')
+				: String(data.get('soloname') ?? '').trim();
 			const payload = {
 				guest: (data.get('guest') as string | null) ?? null,
-				name: String(data.get('name') ?? '').trim(),
+				name,
 				attending,
 				guestsCount,
 				people,
@@ -229,6 +246,10 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-2);
+	}
+	/* display:flex перебивает [hidden] — возвращаем скрытие явно */
+	.person[hidden] {
+		display: none;
 	}
 	.person:not([hidden]) + .person:not([hidden]) {
 		padding-top: var(--space-3);

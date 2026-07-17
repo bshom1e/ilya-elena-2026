@@ -13,6 +13,8 @@ const ALCOHOL_LABELS: Record<string, string> = {
 };
 
 interface Person {
+	/** Имя гостя (у первого совпадает с r.name) */
+	name: string;
 	alcohol: string[];
 	/** Аллергии этого гостя или '' */
 	dietary: string;
@@ -81,15 +83,18 @@ function parseRsvp(body: unknown): Rsvp | { error: string } {
 		}
 		for (const p of b.people) {
 			if (typeof p !== 'object' || p === null) return { error: 'invalid_people' };
-			const alcohol = (p as Record<string, unknown>).alcohol;
+			const pr = p as Record<string, unknown>;
+			const name = pr.name;
+			if (typeof name !== 'string' || name.length > 200) return { error: 'invalid_people' };
+			const alcohol = pr.alcohol;
 			if (!Array.isArray(alcohol) || !alcohol.every((a) => typeof a === 'string' && a in ALCOHOL_LABELS)) {
 				return { error: 'invalid_people' };
 			}
-			const dietary = (p as Record<string, unknown>).dietary;
+			const dietary = pr.dietary;
 			if (typeof dietary !== 'string' || dietary.length > 500) {
 				return { error: 'invalid_people' };
 			}
-			people.push({ alcohol: alcohol as string[], dietary: dietary.trim() });
+			people.push({ name: name.trim(), alcohol: alcohol as string[], dietary: dietary.trim() });
 		}
 	}
 
@@ -121,8 +126,9 @@ function renderMessage(r: Rsvp): string {
 		} else if (r.people.length > 1) {
 			lines.push('Гости:');
 			r.people.forEach((p, i) => {
+				const who = p.name ? escapeHtml(p.name) : `Гость ${i + 1}`;
 				const diet = p.dietary ? `; аллергии: ${escapeHtml(p.dietary)}` : '';
-				lines.push(`  • Гость ${i + 1}: ${drinks(p)}${diet}`);
+				lines.push(`  • ${who}: ${drinks(p)}${diet}`);
 			});
 		}
 	}
