@@ -16,8 +16,11 @@ cd "$(dirname "$0")"
 #  2) запятые в списке chat id заменяем пробелами (функция понимает оба разделителя).
 TG_CHAT_ID_SPACED="${TG_CHAT_ID//,/ }"
 
-# Создаём функцию (идемпотентно) и публикуем новую версию из этой папки.
-yc serverless function create --name "$FUNC" 2>/dev/null || true
+# Создаём функцию, если её ещё нет (ошибки создания больше не прячем).
+if ! yc serverless function get --name "$FUNC" >/dev/null 2>&1; then
+  echo "Создаю функцию $FUNC…"
+  yc serverless function create --name "$FUNC"
+fi
 
 yc serverless function version create \
   --function-name "$FUNC" \
