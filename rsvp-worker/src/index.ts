@@ -12,14 +12,18 @@ const ALCOHOL_LABELS: Record<string, string> = {
 	none: 'не пьёт',
 };
 
+interface Person {
+	alcohol: string[];
+}
+
 interface Rsvp {
 	guest: string | null;
 	name: string;
 	attending: boolean;
 	guestsCount: number;
-	alcohol: string[];
+	/** Предпочтения по напиткам на каждого гостя (длина === guestsCount при attending) */
+	people: Person[];
 	dietary: string;
-	message: string;
 	website: string;
 }
 
@@ -48,7 +52,7 @@ function parseRsvp(body: unknown): Rsvp | { error: string } {
 	const website = typeof b.website === 'string' ? b.website : '';
 	if (website) {
 		// Честварная ловушка: поле заполнил бот — тихо отвечаем 200, не отправляя в Telegram.
-		return { guest: null, name: '', attending: false, guestsCount: 0, alcohol: [], dietary: '', message: '', website };
+		return { guest: null, name: '', attending: false, guestsCount: 0, people: [], dietary: '', website };
 	}
 
 	const guest = b.guest === null || b.guest === undefined ? null : b.guest;
@@ -68,16 +72,24 @@ function parseRsvp(body: unknown): Rsvp | { error: string } {
 		return { error: 'invalid_guests_count' };
 	}
 
-	if (!Array.isArray(b.alcohol) || !b.alcohol.every((a) => typeof a === 'string' && a in ALCOHOL_LABELS)) {
-		return { error: 'invalid_alcohol' };
+	// Напитки — на каждого гостя. При отказе список не важен.
+	let people: Person[] = [];
+	if (b.attending) {
+		if (!Array.isArray(b.people) || b.people.length !== b.guestsCount) {
+			return { error: 'invalid_people' };
+		}
+		for (const p of b.people) {
+			if (typeof p !== 'object' || p === null) return { error: 'invalid_people' };
+			const alcohol = (p as Record<string, unknown>).alcohol;
+			if (!Array.isArray(alcohol) || !alcohol.every((a) => typeof a === 'string' && a in ALCOHOL_LABELS)) {
+				return { error: 'invalid_people' };
+			}
+			people.push({ alcohol: alcohol as string[] });
+		}
 	}
 
 	if (typeof b.dietary !== 'string' || b.dietary.length > 500) {
 		return { error: 'invalid_dietary' };
-	}
-
-	if (typeof b.message !== 'string' || b.message.length > 1000) {
-		return { error: 'invalid_message' };
 	}
 
 	return {
@@ -85,9 +97,8 @@ function parseRsvp(body: unknown): Rsvp | { error: string } {
 		name: b.name.trim(),
 		attending: b.attending,
 		guestsCount: b.guestsCount,
-		alcohol: b.alcohol as string[],
+		people,
 		dietary: b.dietary.trim(),
-		message: b.message.trim(),
 		website,
 	};
 }
@@ -102,12 +113,15 @@ function renderMessage(r: Rsvp): string {
 	lines.push(`Статус: ${r.attending ? '✅ придёт' : '❌ не сможет'}`);
 	if (r.attending) {
 		lines.push(`Гостей: ${r.guestsCount}`);
-		if (r.alcohol.length) {
-			lines.push(`Напитки: ${r.alcohol.map((a) => ALCOHOL_LABELS[a] ?? a).join(', ')}`);
+		const drinks = (p: Person): string => (p.alcohol.length ? p.alcohol.map((a) => ALCOHOL_LABELS[a] ?? a).join(', ') : '—');
+		if (r.people.length === 1) {
+			if (r.people[0].alcohol.length) lines.push(`Напитки: ${drinks(r.people[0])}`);
+		} else if (r.people.length > 1) {
+			lines.push('Напитки:');
+			r.people.forEach((p, i) => lines.push(`  • Гость ${i + 1}: ${drinks(p)}`));
 		}
 	}
-	if (r.dietary) lines.push(`Питание/аллергии: ${escapeHtml(r.dietary)}`);
-	if (r.message) lines.push(`Пожелание: ${escapeHtml(r.message)}`);
+	if (r.dietary) lines.push(`Аллергии: ${escapeHtml(r.dietary)}`);
 	return lines.join('\n');
 }
 

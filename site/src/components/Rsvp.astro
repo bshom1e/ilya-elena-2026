@@ -37,18 +37,26 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 
 		<div class="field" data-if-attending>
 			<label>Предпочтения по напиткам</label>
-			<div class="choices">
-				<label class="choice"><input type="checkbox" name="alcohol" value="red" /> Красное вино</label>
-				<label class="choice"><input type="checkbox" name="alcohol" value="white" /> Белое вино</label>
-				<label class="choice"><input type="checkbox" name="alcohol" value="champagne" /> Шампанское</label>
-				<label class="choice"><input type="checkbox" name="alcohol" value="strong" /> Крепкие напитки</label>
-				<label class="choice"><input type="checkbox" name="alcohol" value="none" /> Не пью</label>
+			{maxGuests > 1 && <p class="hint">Отметьте для каждого — можно по-разному</p>}
+			<div class="people">
+				{counts.map((n) => (
+					<fieldset class="person" data-person={n - 1} hidden={n > 1}>
+						{maxGuests > 1 && <legend>{n === 1 ? 'Вы' : `Гость ${n}`}</legend>}
+						<div class="choices">
+							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="red" /> Красное вино</label>
+							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="white" /> Белое вино</label>
+							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="champagne" /> Шампанское</label>
+							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="strong" /> Крепкие напитки</label>
+							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="none" /> Не пью</label>
+						</div>
+					</fieldset>
+				))}
 			</div>
 		</div>
 
 		<div class="field" data-if-attending>
-			<label for="rsvp-diet">Аллергии или особенности питания</label>
-			<input class="input" id="rsvp-diet" name="dietary" type="text" placeholder="Например: вегетарианство, аллергия на орехи" />
+			<label for="rsvp-diet">Аллергии</label>
+			<input class="input" id="rsvp-diet" name="dietary" type="text" placeholder="Например: аллергия на орехи, морепродукты" />
 		</div>
 
 		{/* honeypot: скрытое поле для отсева ботов */}
@@ -66,8 +74,8 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 		const status = form.querySelector<HTMLParagraphElement>('.status');
 		const attendingInputs = form.querySelectorAll<HTMLInputElement>('input[name="attending"]');
 		const conditionalFields = form.querySelectorAll<HTMLElement>('[data-if-attending]');
-		const alcoholInputs = form.querySelectorAll<HTMLInputElement>('input[name="alcohol"]');
-		const noneAlcohol = form.querySelector<HTMLInputElement>('input[name="alcohol"][value="none"]');
+		const countSelect = form.querySelector<HTMLSelectElement>('select[name="guestsCount"]');
+		const personFieldsets = form.querySelectorAll<HTMLFieldSetElement>('fieldset.person');
 
 		function syncAttendance(): void {
 			const attending = form.querySelector<HTMLInputElement>('input[name="attending"]:checked')?.value === 'yes';
@@ -78,15 +86,30 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 		attendingInputs.forEach((input) => input.addEventListener('change', syncAttendance));
 		syncAttendance();
 
-		alcoholInputs.forEach((input) => {
-			input.addEventListener('change', () => {
-				if (input === noneAlcohol && input.checked) {
-					alcoholInputs.forEach((other) => {
-						if (other !== noneAlcohol) other.checked = false;
-					});
-				} else if (input !== noneAlcohol && input.checked && noneAlcohol) {
-					noneAlcohol.checked = false;
-				}
+		// Показываем по одной группе напитков на каждого заявленного гостя.
+		function syncPeople(): void {
+			const count = Number(countSelect?.value ?? 1);
+			personFieldsets.forEach((fs, i) => {
+				fs.hidden = i >= count;
+			});
+		}
+		countSelect?.addEventListener('change', syncPeople);
+		syncPeople();
+
+		// «Не пью» взаимоисключает остальное — в пределах своей группы.
+		personFieldsets.forEach((fs) => {
+			const inputs = fs.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
+			const none = fs.querySelector<HTMLInputElement>('input[value="none"]');
+			inputs.forEach((input) => {
+				input.addEventListener('change', () => {
+					if (input === none && input.checked) {
+						inputs.forEach((other) => {
+							if (other !== none) other.checked = false;
+						});
+					} else if (input !== none && input.checked && none) {
+						none.checked = false;
+					}
+				});
 			});
 		});
 
@@ -103,14 +126,19 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 
 			const data = new FormData(form);
 			const attending = data.get('attending') === 'yes';
+			const guestsCount = attending ? Number(data.get('guestsCount') ?? 1) : 1;
+			const people = attending
+				? Array.from({ length: guestsCount }, (_, i) => ({
+						alcohol: data.getAll(`alcohol-${i}`) as string[],
+					}))
+				: [];
 			const payload = {
 				guest: (data.get('guest') as string | null) ?? null,
 				name: String(data.get('name') ?? '').trim(),
 				attending,
-				guestsCount: attending ? Number(data.get('guestsCount') ?? 1) : 1,
-				alcohol: attending ? (data.getAll('alcohol') as string[]) : [],
+				guestsCount,
+				people,
 				dietary: attending ? String(data.get('dietary') ?? '').trim() : '',
-				message: String(data.get('message') ?? '').trim(),
 				website: String(data.get('website') ?? ''),
 			};
 
@@ -186,6 +214,34 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 	.textarea {
 		min-height: 6em;
 		resize: vertical;
+	}
+	.hint {
+		margin: -0.35rem 0 0;
+		font-size: var(--text-caption);
+		color: var(--color-text-muted);
+	}
+	.people {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+	}
+	.person {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		min-inline-size: 0;
+	}
+	.person:not([hidden]) + .person:not([hidden]) {
+		padding-top: var(--space-3);
+		border-top: 1px solid var(--color-line);
+	}
+	.person legend {
+		padding: 0;
+		margin-bottom: var(--space-2);
+		font-size: var(--text-caption);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		color: var(--color-accent-ink);
 	}
 	.choices {
 		display: flex;
