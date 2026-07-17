@@ -1,6 +1,6 @@
 // Yandex Cloud Function: приём RSVP и отправка в Telegram.
 // RU-хостинг — гостям доступно без VPN (в отличие от workers.dev).
-// Контракт полностью совпадает с разделом «Контракт RSVP» в CLAUDE.md.
+// Контракт запроса совпадает с прежним воркером в ../rsvp-worker.
 // Секреты — в переменных окружения функции: TG_BOT_TOKEN, TG_CHAT_ID (id через запятую).
 
 const ALLOWED_ORIGIN = 'https://bshom1e.github.io';
