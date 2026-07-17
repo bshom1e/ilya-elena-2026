@@ -1,0 +1,7 @@
+{
+  "name": "rsvp-fn",
+  "version": "1.0.0",
+  "description": "Yandex Cloud Function: RSVP → Telegram",
+  "main": "index.js",
+  "private": true
+}
