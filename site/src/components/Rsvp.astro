@@ -160,7 +160,7 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 			if (status) status.hidden = true;
 
 			try {
-				const res = await fetch(`${endpoint}/rsvp`, {
+				const res = await fetch(endpoint, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(payload),

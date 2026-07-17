@@ -61,7 +61,7 @@ export interface Wedding {
 		telegram: string;
 		telegramUrl: string;
 	};
-	/** Базовый URL воркера RSVP (без `/rsvp`) */
+	/** URL функции RSVP — POST шлётся прямо на него */
 	rsvpEndpoint: string;
 }
 
@@ -168,5 +168,5 @@ export const wedding: Wedding = {
 		telegram: '@elgrudina394',
 		telegramUrl: 'https://t.me/elgrudina394',
 	},
-	rsvpEndpoint: 'https://rsvp-worker.bshom1e.workers.dev',
+	rsvpEndpoint: 'https://functions.yandexcloud.net/d4egfb5ct1gpd2kgnudl',
 };
