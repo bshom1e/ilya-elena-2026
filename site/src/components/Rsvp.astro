@@ -36,8 +36,8 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 		</div>
 
 		<div class="field" data-if-attending>
-			<label>Предпочтения по напиткам</label>
-			{maxGuests > 1 && <p class="hint">Отметьте для каждого — можно по-разному</p>}
+			<label>Напитки и аллергии</label>
+			{maxGuests > 1 && <p class="hint">Заполните на каждого — у всех по-разному</p>}
 			<div class="people">
 				{counts.map((n) => (
 					<fieldset class="person" data-person={n - 1} hidden={n > 1}>
@@ -49,14 +49,10 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="strong" /> Крепкие напитки</label>
 							<label class="choice"><input type="checkbox" name={`alcohol-${n - 1}`} value="none" /> Не пью</label>
 						</div>
+						<input class="input person-diet" name={`diet-${n - 1}`} type="text" placeholder="Аллергии — например, орехи" aria-label="Аллергии" />
 					</fieldset>
 				))}
 			</div>
-		</div>
-
-		<div class="field" data-if-attending>
-			<label for="rsvp-diet">Аллергии</label>
-			<input class="input" id="rsvp-diet" name="dietary" type="text" placeholder="Например: аллергия на орехи, морепродукты" />
 		</div>
 
 		{/* honeypot: скрытое поле для отсева ботов */}
@@ -130,6 +126,7 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 			const people = attending
 				? Array.from({ length: guestsCount }, (_, i) => ({
 						alcohol: data.getAll(`alcohol-${i}`) as string[],
+						dietary: String(data.get(`diet-${i}`) ?? '').trim(),
 					}))
 				: [];
 			const payload = {
@@ -138,7 +135,6 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 				attending,
 				guestsCount,
 				people,
-				dietary: attending ? String(data.get('dietary') ?? '').trim() : '',
 				website: String(data.get('website') ?? ''),
 			};
 
@@ -230,6 +226,9 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 		padding: 0;
 		border: 0;
 		min-inline-size: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
 	}
 	.person:not([hidden]) + .person:not([hidden]) {
 		padding-top: var(--space-3);

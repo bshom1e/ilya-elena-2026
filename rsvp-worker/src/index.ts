@@ -14,6 +14,8 @@ const ALCOHOL_LABELS: Record<string, string> = {
 
 interface Person {
 	alcohol: string[];
+	/** Аллергии этого гостя или '' */
+	dietary: string;
 }
 
 interface Rsvp {
@@ -21,9 +23,8 @@ interface Rsvp {
 	name: string;
 	attending: boolean;
 	guestsCount: number;
-	/** Предпочтения по напиткам на каждого гостя (длина === guestsCount при attending) */
+	/** Анкета на каждого гостя (длина === guestsCount при attending) */
 	people: Person[];
-	dietary: string;
 	website: string;
 }
 
@@ -52,7 +53,7 @@ function parseRsvp(body: unknown): Rsvp | { error: string } {
 	const website = typeof b.website === 'string' ? b.website : '';
 	if (website) {
 		// Честварная ловушка: поле заполнил бот — тихо отвечаем 200, не отправляя в Telegram.
-		return { guest: null, name: '', attending: false, guestsCount: 0, people: [], dietary: '', website };
+		return { guest: null, name: '', attending: false, guestsCount: 0, people: [], website };
 	}
 
 	const guest = b.guest === null || b.guest === undefined ? null : b.guest;
@@ -84,12 +85,12 @@ function parseRsvp(body: unknown): Rsvp | { error: string } {
 			if (!Array.isArray(alcohol) || !alcohol.every((a) => typeof a === 'string' && a in ALCOHOL_LABELS)) {
 				return { error: 'invalid_people' };
 			}
-			people.push({ alcohol: alcohol as string[] });
+			const dietary = (p as Record<string, unknown>).dietary;
+			if (typeof dietary !== 'string' || dietary.length > 500) {
+				return { error: 'invalid_people' };
+			}
+			people.push({ alcohol: alcohol as string[], dietary: dietary.trim() });
 		}
-	}
-
-	if (typeof b.dietary !== 'string' || b.dietary.length > 500) {
-		return { error: 'invalid_dietary' };
 	}
 
 	return {
@@ -98,7 +99,6 @@ function parseRsvp(body: unknown): Rsvp | { error: string } {
 		attending: b.attending,
 		guestsCount: b.guestsCount,
 		people,
-		dietary: b.dietary.trim(),
 		website,
 	};
 }
@@ -115,13 +115,17 @@ function renderMessage(r: Rsvp): string {
 		lines.push(`Гостей: ${r.guestsCount}`);
 		const drinks = (p: Person): string => (p.alcohol.length ? p.alcohol.map((a) => ALCOHOL_LABELS[a] ?? a).join(', ') : '—');
 		if (r.people.length === 1) {
-			if (r.people[0].alcohol.length) lines.push(`Напитки: ${drinks(r.people[0])}`);
+			const p = r.people[0];
+			if (p.alcohol.length) lines.push(`Напитки: ${drinks(p)}`);
+			if (p.dietary) lines.push(`Аллергии: ${escapeHtml(p.dietary)}`);
 		} else if (r.people.length > 1) {
-			lines.push('Напитки:');
-			r.people.forEach((p, i) => lines.push(`  • Гость ${i + 1}: ${drinks(p)}`));
+			lines.push('Гости:');
+			r.people.forEach((p, i) => {
+				const diet = p.dietary ? `; аллергии: ${escapeHtml(p.dietary)}` : '';
+				lines.push(`  • Гость ${i + 1}: ${drinks(p)}${diet}`);
+			});
 		}
 	}
-	if (r.dietary) lines.push(`Аллергии: ${escapeHtml(r.dietary)}`);
 	return lines.join('\n');
 }
 
