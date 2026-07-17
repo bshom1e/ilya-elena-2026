@@ -146,7 +146,7 @@ module.exports.handler = async (event) => {
 	}
 
 	const chatIds = String(process.env.TG_CHAT_ID || '')
-		.split(',')
+		.split(/[,\s]+/) // yc не пропускает запятые в значении env — принимаем и пробел как разделитель
 		.map((id) => id.trim())
 		.filter(Boolean);
 	const text = renderMessage(parsed);

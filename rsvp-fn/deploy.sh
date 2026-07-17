@@ -11,6 +11,11 @@ FUNC=rsvp-fn
 
 cd "$(dirname "$0")"
 
+# yc --environment разбивает значение по запятым, поэтому:
+#  1) каждую переменную передаём ОТДЕЛЬНЫМ флагом --environment;
+#  2) запятые в списке chat id заменяем пробелами (функция понимает оба разделителя).
+TG_CHAT_ID_SPACED="${TG_CHAT_ID//,/ }"
+
 # Создаём функцию (идемпотентно) и публикуем новую версию из этой папки.
 yc serverless function create --name "$FUNC" 2>/dev/null || true
 
@@ -21,7 +26,8 @@ yc serverless function version create \
   --memory 128m \
   --execution-timeout 10s \
   --source-path ./ \
-  --environment "TG_BOT_TOKEN=${TG_BOT_TOKEN},TG_CHAT_ID=${TG_CHAT_ID}"
+  --environment "TG_BOT_TOKEN=${TG_BOT_TOKEN}" \
+  --environment "TG_CHAT_ID=${TG_CHAT_ID_SPACED}"
 
 # Делаем функцию публичной (гости вызывают без авторизации).
 yc serverless function allow-unauthenticated-invoke "$FUNC"
