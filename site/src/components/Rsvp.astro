@@ -155,17 +155,46 @@ const counts = Array.from({ length: Math.max(1, maxGuests) }, (_, i) => i + 1);
 				website: String(data.get('website') ?? ''),
 			};
 
+			if (!name) {
+				showStatus('Пожалуйста, укажите имя.', 'error');
+				return;
+			}
+
 			submitBtn.disabled = true;
 			submitBtn.textContent = 'Отправляем…';
 			if (status) status.hidden = true;
 
+			// Одна попытка с таймаутом. Холодный старт функции или нестабильная сеть
+			// иногда роняют ответ, хотя запрос доходит — поэтому есть повтор ниже.
+			const postOnce = async (): Promise<Response> => {
+				const ctrl = new AbortController();
+				const timer = setTimeout(() => ctrl.abort(), 15000);
+				try {
+					return await fetch(endpoint, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(payload),
+						keepalive: true,
+						signal: ctrl.signal,
+					});
+				} finally {
+					clearTimeout(timer);
+				}
+			};
+
 			try {
-				const res = await fetch(endpoint, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(payload),
-				});
-				if (!res.ok) throw new Error('request_failed');
+				let res: Response | undefined;
+				for (let attempt = 1; attempt <= 2; attempt++) {
+					try {
+						res = await postOnce();
+						// Ошибки валидации (4xx) не повторяем — данные надо поправить.
+						if (res.ok || (res.status >= 400 && res.status < 500)) break;
+					} catch (err) {
+						if (attempt === 2) throw err;
+					}
+					if (attempt < 2) await new Promise((r) => setTimeout(r, 1200));
+				}
+				if (!res || !res.ok) throw new Error('request_failed');
 
 				form.querySelectorAll('input, select, textarea, button').forEach((el) => {
 					(el as HTMLInputElement | HTMLButtonElement).disabled = true;

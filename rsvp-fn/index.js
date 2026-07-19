@@ -150,15 +150,21 @@ module.exports.handler = async (event) => {
 		.map((id) => id.trim())
 		.filter(Boolean);
 	const text = renderMessage(parsed);
-	const results = await Promise.all(
-		chatIds.map((chatId) =>
-			fetch(`https://api.telegram.org/bot${process.env.TG_BOT_TOKEN}/sendMessage`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
-			})
-		)
-	);
+	let results;
+	try {
+		results = await Promise.all(
+			chatIds.map((chatId) =>
+				fetch(`https://api.telegram.org/bot${process.env.TG_BOT_TOKEN}/sendMessage`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
+				})
+			)
+		);
+	} catch (e) {
+		// Любой сбой сети до Telegram — отдаём корректный CORS-JSON, а не голый 500.
+		return json({ ok: false, error: 'telegram_error' }, 502, origin);
+	}
 
 	if (!results.some((r) => r.ok)) {
 		return json({ ok: false, error: 'telegram_failed' }, 502, origin);
